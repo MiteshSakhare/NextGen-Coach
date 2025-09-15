@@ -1,0 +1,24 @@
+{
+  "css.validate": false,
+  "scss.validate": false,
+  "less.validate": false,
+  "postcss.validate": false,
+  "tailwindCSS.includeLanguages": {
+    "javascript": "javascript",
+    "html": "html"
+  },
+  "tailwindCSS.experimental.classRegex": [
+    "class:\\s*?[\"'`]([^\"'`]*).*?[\"'`]",
+    "(?:enter|leave)(?:From|To)?=\\s*(?:\"|')([^\"']*)(?:\"|')",
+    "(?:enter|leave)(?:From|To)?=\\s*(?:\"|'|{`)([^\"'`]*)(?:\"|'|`})",
+    "className=\\s*(?:\"|')([^\"']*)(?:\"|')",
+    "className=\\s*(?:\"|'|{`)([^\"'`]*)(?:\"|'|`})"
+  ],
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+  "editor.quickSuggestions": {
+    "strings": true
+  },
+  "css.customData": [".vscode/css_custom_data.json"]
+}
