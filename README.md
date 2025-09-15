@@ -57,7 +57,7 @@ Get your API key from [Google AI Studio](https://ai.google.dev/)
 
 ## 📱 Screenshots
 
-![Dashboard](https://via.placeholder.com/600x300/1a365d/ffffff?text=NextGen+Coach+Dashboard)
+<img width="1918" height="868" alt="image" src="https://github.com/user-attachments/assets/bc167a11-3100-406f-86f8-2d7cfc62cbda" />
 
 ## 🚀 Deployment
 
