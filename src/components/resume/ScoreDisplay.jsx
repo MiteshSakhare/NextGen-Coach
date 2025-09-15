@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { BarChart3 } from 'lucide-react'; // Add this import
+import { BarChart3 } from 'lucide-react';
 import { 
   Trophy, 
   Target, 
@@ -59,20 +59,15 @@ const ProgressRing = ({ score, size = 120, strokeWidth = 8 }) => {
   const strokeDashoffset = circumference - (score / 100) * circumference;
   
   const getColor = () => {
-    if (score >= 80) return '#10B981'; // green
-    if (score >= 60) return '#F59E0B'; // yellow
-    if (score >= 40) return '#F97316'; // orange
-    return '#EF4444'; // red
+    if (score >= 80) return '#10B981';
+    if (score >= 60) return '#F59E0B';
+    if (score >= 40) return '#F97316';
+    return '#EF4444';
   };
 
   return (
     <div className="relative inline-flex items-center justify-center">
-      <svg
-        className="transform -rotate-90"
-        width={size}
-        height={size}
-      >
-        {/* Background Circle */}
+      <svg className="transform -rotate-90" width={size} height={size}>
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -81,8 +76,6 @@ const ProgressRing = ({ score, size = 120, strokeWidth = 8 }) => {
           strokeWidth={strokeWidth}
           fill="transparent"
         />
-        
-        {/* Progress Circle */}
         <motion.circle
           cx={size / 2}
           cy={size / 2}
@@ -95,13 +88,10 @@ const ProgressRing = ({ score, size = 120, strokeWidth = 8 }) => {
           initial={{ strokeDashoffset: circumference }}
           animate={{ strokeDashoffset }}
           transition={{ duration: 2, ease: "easeInOut" }}
-          style={{
-            filter: `drop-shadow(0 0 8px ${getColor()}30)`
-          }}
+          style={{ filter: `drop-shadow(0 0 8px ${getColor()}30)` }}
         />
       </svg>
       
-      {/* Center Content */}
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="text-center">
           <motion.div
@@ -123,33 +113,6 @@ const ProgressRing = ({ score, size = 120, strokeWidth = 8 }) => {
   );
 };
 
-// Category Icon Component
-const CategoryIcon = ({ category, score }) => {
-  const icons = {
-    quality: { icon: Sparkles, color: 'text-purple-500' },
-    skills: { icon: Cpu, color: 'text-blue-500' },
-    experience: { icon: Briefcase, color: 'text-green-500' },
-    education: { icon: GraduationCap, color: 'text-indigo-500' },
-    format: { icon: FileText, color: 'text-orange-500' }
-  };
-  
-  const { icon: Icon, color } = icons[category] || icons.quality;
-  
-  return (
-    <motion.div
-      className={`p-3 rounded-xl ${
-        score >= 70 ? 'bg-gradient-to-br from-green-100 to-emerald-100' :
-        score >= 50 ? 'bg-gradient-to-br from-yellow-100 to-orange-100' :
-        'bg-gradient-to-br from-red-100 to-pink-100'
-      }`}
-      whileHover={{ scale: 1.05 }}
-      transition={{ type: "spring", stiffness: 400 }}
-    >
-      <Icon className={`h-5 w-5 ${color}`} />
-    </motion.div>
-  );
-};
-
 export function ScoreDisplay({ analysis }) {
   console.log('🎯 ScoreDisplay received:', analysis);
   
@@ -168,24 +131,13 @@ export function ScoreDisplay({ analysis }) {
     );
   }
 
-  const {
-    overallScore = 0,
-    scores = {},
-    atsScore = 0
-  } = analysis;
+  const { overallScore = 0, scores = {}, atsScore = 0 } = analysis;
 
   const getScoreColor = (score) => {
     if (score >= 80) return 'text-green-600';
     if (score >= 60) return 'text-yellow-600';
     if (score >= 40) return 'text-orange-600';
     return 'text-red-600';
-  };
-
-  const getScoreBg = (score) => {
-    if (score >= 80) return 'bg-green-500';
-    if (score >= 60) return 'bg-yellow-500';
-    if (score >= 40) return 'bg-orange-500';
-    return 'bg-red-500';
   };
 
   const getScoreGradient = (score) => {
@@ -207,6 +159,15 @@ export function ScoreDisplay({ analysis }) {
 
   const formatScore = (score) => Math.round(score || 0);
 
+  // FIXED: Properly count sections found
+  const getSectionsCount = () => {
+    if (!analysis.textStats?.sectionsFound) return 0;
+    if (typeof analysis.textStats.sectionsFound === 'object') {
+      return Object.values(analysis.textStats.sectionsFound).filter(Boolean).length;
+    }
+    return 0;
+  };
+
   return (
     <div className="space-y-8">
       {/* Hero Score Section */}
@@ -216,12 +177,10 @@ export function ScoreDisplay({ analysis }) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        {/* Background Decoration */}
         <div className="absolute inset-0 bg-gradient-to-r from-blue-50 via-purple-50 to-indigo-50 rounded-3xl opacity-50" />
         <div className="absolute inset-0 bg-gradient-to-br from-white/80 to-white/40 rounded-3xl backdrop-blur-sm" />
         
         <div className="relative py-12 px-8">
-          {/* Main Score Circle */}
           <motion.div
             className="inline-block mb-6"
             initial={{ scale: 0, rotate: -180 }}
@@ -231,7 +190,6 @@ export function ScoreDisplay({ analysis }) {
             <ProgressRing score={formatScore(overallScore)} size={160} strokeWidth={12} />
           </motion.div>
           
-          {/* Score Icon */}
           <motion.div
             className="mb-4"
             initial={{ opacity: 0, scale: 0 }}
@@ -272,8 +230,6 @@ export function ScoreDisplay({ analysis }) {
 
       {/* Detailed Analysis Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
-        {/* Individual Scores */}
         <div className="lg:col-span-2 bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
           <div className="flex items-center mb-6">
             <motion.div
@@ -347,7 +303,6 @@ export function ScoreDisplay({ analysis }) {
             <p className="text-sm text-gray-600">Applicant Tracking System Score</p>
           </div>
           
-          {/* ATS Score Circle */}
           <div className="flex justify-center mb-6">
             <ProgressRing score={formatScore(atsScore)} size={140} strokeWidth={10} />
           </div>
@@ -365,7 +320,6 @@ export function ScoreDisplay({ analysis }) {
             </p>
           </div>
 
-          {/* ATS Features Checklist */}
           <div className="space-y-3">
             <h6 className="font-semibold text-gray-800 text-sm mb-3">ATS Optimization Features:</h6>
             {[
@@ -397,7 +351,7 @@ export function ScoreDisplay({ analysis }) {
         </div>
       </div>
 
-      {/* Quick Stats Dashboard */}
+      {/* FIXED: Quick Stats Dashboard */}
       <motion.div
         className="grid grid-cols-2 md:grid-cols-4 gap-4"
         initial={{ opacity: 0, y: 30 }}
@@ -421,7 +375,7 @@ export function ScoreDisplay({ analysis }) {
           },
           {
             label: 'Sections',
-            value: analysis.textStats?.sectionsFound || 0,
+            value: getSectionsCount(), // FIXED: Use function instead of object
             icon: Target,
             color: 'green',
             suffix: ''
@@ -445,7 +399,6 @@ export function ScoreDisplay({ analysis }) {
             whileHover={{ scale: 1.05, y: -2 }}
             initial={{ opacity: 0, scale: 0 }}
             animate={{ opacity: 1, scale: 1 }}
-            // Fixed: Combined transition properties
             transition={{ 
               delay: 0.9 + (0.1 * index),
               type: "spring", 
@@ -466,6 +419,35 @@ export function ScoreDisplay({ analysis }) {
           </motion.div>
         ))}
       </motion.div>
+
+      {/* FIXED: Show sections found properly */}
+      {analysis.textStats?.sectionsFound && (
+        <motion.div
+          className="bg-gray-50 rounded-xl p-6 border border-gray-200"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.0 }}
+        >
+          <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+            <BarChart3 className="h-5 w-5 mr-2 text-blue-600" />
+            Resume Sections Detected
+          </h4>
+          <div className="flex flex-wrap gap-2">
+            {Object.entries(analysis.textStats.sectionsFound).map(([section, found]) => 
+              found && (
+                <motion.span
+                  key={section}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium capitalize border border-blue-200"
+                >
+                  {section}
+                </motion.span>
+              )
+            )}
+          </div>
+        </motion.div>
+      )}
     </div>
   );
 }
