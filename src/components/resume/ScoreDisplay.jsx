@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { BarChart3 } from 'lucide-react'; // Add this import
 import { 
   Trophy, 
   Target, 
