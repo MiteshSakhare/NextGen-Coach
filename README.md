@@ -21,7 +21,7 @@ NextGen Coach is an AI-powered career coaching platform that helps professionals
 ## 🚀 Quick Start
 
 1. **Clone the repository**
-git clone https://github.com/yourusername/nextgen-coach.git
+git clone https://github.com/MiteshSakhare/NextGen-Coach
 cd nextgen-coach
 
 text
@@ -57,7 +57,7 @@ Get your API key from [Google AI Studio](https://ai.google.dev/)
 
 ## 📱 Screenshots
 
-![Dashboard](https://via.placeholder.com/600x300/1a365d/ffffff?text=NextGen+Coach+Dashboard)
+<img width="1918" height="868" alt="image" src="https://github.com/user-attachments/assets/bc167a11-3100-406f-86f8-2d7cfc62cbda" />
 
 ## 🚀 Deployment
 
@@ -101,5 +101,3 @@ text
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 👨‍💻 Author
