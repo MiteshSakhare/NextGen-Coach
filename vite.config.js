@@ -18,8 +18,6 @@ export default defineConfig({
   },
   define: {
     // Ensure environment variables are available at build time
-    'import.meta.env.VITE_GEMINI_API_KEY': JSON.stringify(process.env.VITE_GEMINI_API_KEY),
-    'import.meta.env.VITE_APP_NAME': JSON.stringify(process.env.VITE_APP_NAME),
-    'import.meta.env.VITE_API_BASE_URL': JSON.stringify(process.env.VITE_API_BASE_URL)
+    'import.meta.env.VITE_GEMINI_API_KEY': JSON.stringify(process.env.VITE_GEMINI_API_KEY)
   }
 })
