@@ -21,7 +21,7 @@ NextGen Coach is an AI-powered career coaching platform that helps professionals
 ## 🚀 Quick Start
 
 1. **Clone the repository**
-git clone https://github.com/yourusername/nextgen-coach.git
+git clone https://github.com/MiteshSakhare/NextGen-Coach
 cd nextgen-coach
 
 text
