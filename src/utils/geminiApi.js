@@ -5,6 +5,12 @@ const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://generativelanguage.googleapis.com';
 const APP_NAME = import.meta.env.VITE_APP_NAME || 'NextGen Coach';
 
+// Enhanced debug logging (secure)
+console.log('🔍 SECURE ENVIRONMENT DEBUG:');
+console.log('   MODE:', import.meta.env.MODE);
+console.log('   API Key Status:', API_KEY ? 'LOADED' : 'MISSING');
+console.log('   API Key Length:', API_KEY ? API_KEY.length : 0);
+
 // Force cache refresh with version
 console.log(`🚀 Loading ${APP_NAME} GeminiAPI v4.0 -`, new Date().toISOString());
 
@@ -22,8 +28,12 @@ class GeminiService {
   }
 
   initializeService() {
+    console.log('🔧 === INITIALIZING GEMINI SERVICE ===');
+    console.log('   API Key Status:', this.apiKey ? 'Available' : 'Missing from environment');
+
     if (!this.apiKey || this.apiKey === 'your_gemini_api_key_here') {
       console.warn('⚠️ Gemini API key not configured. Using fallback mode.');
+      console.warn('   Please check your .env file and restart the server');
       this.isInitialized = false;
       return;
     }
@@ -33,7 +43,7 @@ class GeminiService {
       this.model = this.genAI.getGenerativeModel({ 
         model: 'gemini-1.5-flash',
         generationConfig: {
-          temperature: 0.7,
+          temperature: 0.2, // Lower for consistent strict analysis
           topP: 0.8,
           topK: 40,
           maxOutputTokens: 2048,
@@ -58,7 +68,7 @@ class GeminiService {
   }
 
   // ============================================================================
-  // RESUME ANALYSIS - Complete Implementation
+  // RESUME ANALYSIS - Complete Implementation with Ultra-Strict Detection
   // ============================================================================
 
   async analyzeResume(resumeText) {
@@ -91,9 +101,9 @@ class GeminiService {
     let analysis;
     try {
       if (this.isInitialized) {
-        analysis = await this.performAIAnalysis(resumeText);
+        analysis = await this.performAIAnalysisUltraStrict(resumeText);
       } else {
-        analysis = this.performAdvancedTextAnalysis(resumeText);
+        analysis = this.performAdvancedTextAnalysisUltraStrict(resumeText);
       }
       
       localStorage.setItem(cacheKey, JSON.stringify(analysis));
@@ -102,42 +112,45 @@ class GeminiService {
     } catch (error) {
       console.error('Resume analysis error:', error);
       // Fallback to advanced text analysis
-      analysis = this.performAdvancedTextAnalysis(resumeText);
+      analysis = this.performAdvancedTextAnalysisUltraStrict(resumeText);
       localStorage.setItem(cacheKey, JSON.stringify(analysis));
       return analysis;
     }
   }
 
-  async performAIAnalysis(resumeText) {
-    console.log('🤖 Performing AI-powered analysis...');
+  async performAIAnalysisUltraStrict(resumeText) {
+    console.log('🤖 Performing Ultra-Strict AI analysis...');
     
     const prompt = `
-    Analyze this resume and provide a comprehensive evaluation. Return a JSON response with the following structure:
+    You are an EXTREMELY STRICT resume analyst. Analyze this document and determine if it's actually a professional resume.
 
+    🚨 ULTRA-STRICT RULES:
+    1. If this is NOT a professional resume (certificate, training, article, etc.) → Give scores 15-30
+    2. Only REAL professional resumes with work experience get 50+ scores
+    3. Look for CERTIFICATE KILLERS: "certificate", "completion", "awarded", "training", "course", "program"
+
+    Return JSON with this structure:
     {
-      "overallScore": number (40-95),
+      "isActualResume": true_or_false,
+      "contentType": "resume|certificate|training|article|other",
+      "overallScore": number (15-95),
       "scores": {
-        "quality": number (30-95),
-        "skills": number (25-95),
-        "experience": number (35-95),
-        "education": number (40-95),
-        "format": number (45-95)
+        "quality": number (15-95),
+        "skills": number (15-95),
+        "experience": number (15-95),
+        "education": number (15-95),
+        "format": number (15-95)
       },
-      "atsScore": number (50-100),
+      "atsScore": number (20-100),
       "strengths": ["strength1", "strength2", "strength3"],
       "improvements": ["improvement1", "improvement2", "improvement3"],
       "recommendations": ["recommendation1", "recommendation2", "recommendation3"]
     }
 
-    Resume Text:
+    Document to analyze:
     ${resumeText}
 
-    Guidelines:
-    - Scores should be realistic (40-95 range for overall, 25-95 for individual categories)
-    - Focus on content quality, skills relevance, experience presentation, education background, and formatting
-    - ATS score should reflect keyword density, standard formatting, and readability
-    - Provide 3-5 specific strengths, improvements, and actionable recommendations
-    - Consider industry standards and current hiring practices
+    CRITICAL: If you see ANY certificate/training language, immediately classify as non-resume with 15-30 scores!
     `;
 
     try {
@@ -150,27 +163,121 @@ class GeminiService {
       if (jsonMatch) {
         const analysisData = JSON.parse(jsonMatch[0]);
         
-        // Validate and sanitize the data
-        const sanitizedAnalysis = this.sanitizeAnalysisData(analysisData, resumeText);
-        return sanitizedAnalysis;
+        // Apply ultra-strict validation
+        const strictAnalysis = this.applyUltraStrictValidation(analysisData, resumeText);
+        return strictAnalysis;
       } else {
         throw new Error('Invalid AI response format');
       }
     } catch (error) {
-      console.warn('AI analysis failed, using advanced text analysis:', error.message);
-      return this.performAdvancedTextAnalysis(resumeText);
+      console.warn('AI analysis failed, using ultra-strict text analysis:', error.message);
+      return this.performAdvancedTextAnalysisUltraStrict(resumeText);
     }
   }
 
-  performAdvancedTextAnalysis(resumeText) {
-    console.log('📊 Performing advanced text analysis...');
+  applyUltraStrictValidation(data, resumeText) {
+    const text = resumeText.toLowerCase();
+    
+    // ULTRA-STRICT CERTIFICATE DETECTION
+    const certificateWords = [
+      'certificate', 'certification', 'completion', 'awarded', 'training',
+      'course', 'program', 'workshop', 'seminar', 'hereby certify',
+      'has successfully completed', 'course completion'
+    ];
+    
+    const certificateMatches = certificateWords.filter(word => text.includes(word));
+    
+    // Professional resume indicators
+    const hasEmail = /@/.test(resumeText);
+    const hasPhone = /\d{3}[-.\s]\d{3}[-.\s]\d{4}/.test(resumeText);
+    const hasWorkExp = /(?:experience|employment|worked|job|developer|engineer|manager)/i.test(resumeText);
+    const hasSkills = /(?:skills|technical|competencies)/i.test(resumeText);
+    
+    let isActualResume = data.isActualResume !== false;
+    let overallScore = data.overallScore || 50;
+    let contentType = data.contentType || 'resume';
+    
+    console.log('🔍 Ultra-strict validation:');
+    console.log('   Certificate words found:', certificateMatches.length);
+    console.log('   Has work experience:', hasWorkExp);
+    console.log('   Has contact info:', hasEmail || hasPhone);
+    
+    // FORCE REJECTION if certificate language found
+    if (certificateMatches.length >= 1) {
+      console.log('🚨 CERTIFICATE DETECTED - FORCING LOW SCORES');
+      isActualResume = false;
+      contentType = 'certificate';
+      overallScore = Math.max(15, Math.min(30, 20 + Math.floor(Math.random() * 10)));
+    }
+    
+    // FORCE REJECTION if missing basic resume elements
+    if (!hasWorkExp || (!hasEmail && !hasPhone)) {
+      console.log('🚨 MISSING RESUME ESSENTIALS - FORCING LOW SCORES');
+      isActualResume = false;
+      overallScore = Math.max(15, Math.min(30, 18 + Math.floor(Math.random() * 12)));
+    }
+    
+    // Only allow high scores for validated resumes
+    if (isActualResume && certificateMatches.length === 0 && hasWorkExp && (hasEmail || hasPhone)) {
+      overallScore = Math.max(50, Math.min(95, overallScore));
+      console.log('✅ VALIDATED AS REAL RESUME');
+    }
+    
+    return this.sanitizeAnalysisData({
+      ...data,
+      isActualResume,
+      contentType,
+      overallScore,
+      certificateDetected: certificateMatches.length > 0
+    }, resumeText);
+  }
+
+  performAdvancedTextAnalysisUltraStrict(resumeText) {
+    console.log('📊 Performing Ultra-Strict advanced text analysis...');
     
     const text = resumeText.toLowerCase();
     const lines = resumeText.split('\n').filter(line => line.trim());
     const words = text.split(/\s+/).filter(word => word.length > 2);
     const wordCount = words.length;
     
-    // Comprehensive analysis
+    // ULTRA-STRICT CERTIFICATE DETECTION
+    const certificateWords = ['certificate', 'certification', 'completion', 'awarded', 'training', 'course', 'program'];
+    const certificateMatches = certificateWords.filter(word => text.includes(word)).length;
+    
+    // Resume detection
+    const resumeWords = ['experience', 'employment', 'skills', 'developer', 'engineer', 'manager'];
+    const resumeMatches = resumeWords.filter(word => text.includes(word)).length;
+    
+    const hasEmail = /@/.test(resumeText);
+    const hasPhone = /\d{3}[-.\s]\d{3}[-.\s]\d{4}/.test(resumeText);
+    const hasWorkExp = /(?:experience|employment|worked|job)/i.test(resumeText);
+    
+    let isActualResume = false;
+    let contentType = 'other';
+    let overallScore = 25;
+    
+    console.log('📊 Ultra-strict detection results:');
+    console.log('   Certificate matches:', certificateMatches);
+    console.log('   Resume matches:', resumeMatches);
+    console.log('   Has work experience:', hasWorkExp);
+    console.log('   Has contact info:', hasEmail || hasPhone);
+    
+    // STRICT CLASSIFICATION
+    if (certificateMatches >= 1) {
+      console.log('🚨 CERTIFICATE DETECTED - LOW SCORES');
+      contentType = 'certificate';
+      overallScore = 15 + Math.floor(Math.random() * 15); // 15-30
+    } else if (resumeMatches >= 3 && hasWorkExp && (hasEmail || hasPhone) && wordCount >= 100) {
+      console.log('✅ RESUME VALIDATED - NORMAL SCORES');
+      isActualResume = true;
+      contentType = 'resume';
+      overallScore = 55 + Math.floor(Math.random() * 25); // 55-80
+    } else {
+      console.log('❌ INSUFFICIENT RESUME CRITERIA - LOW SCORES');
+      overallScore = 18 + Math.floor(Math.random() * 12); // 18-30
+    }
+    
+    // Comprehensive analysis (keeping your original logic for actual resumes)
     const sections = this.detectSections(resumeText);
     const skills = this.extractSkills(text);
     const experience = this.analyzeExperience(resumeText);
@@ -178,34 +285,41 @@ class GeminiService {
     const formatting = this.analyzeFormatting(resumeText);
     const keywords = this.extractKeywords(text);
     
-    console.log('📋 Analysis data:', {
-      wordCount,
-      sectionsFound: Object.keys(sections).filter(k => sections[k]).length,
-      skillsFound: skills.length,
-      keywordsFound: keywords.length,
-      hasExperience: sections.experience,
-      hasEducation: sections.education
-    });
+    // Calculate scores based on classification
+    let scores;
+    if (isActualResume) {
+      scores = {
+        quality: this.calculateQualityScore(resumeText, sections, wordCount, skills, keywords),
+        skills: this.calculateSkillsScore(skills, text, keywords),
+        experience: this.calculateExperienceScore(experience, sections, resumeText),
+        education: this.calculateEducationScore(education, sections, text),
+        format: this.calculateFormattingScore(formatting, lines, resumeText)
+      };
+      overallScore = Math.round(Object.values(scores).reduce((a, b) => a + b) / 5);
+    } else {
+      // Low scores for non-resumes
+      scores = {
+        quality: Math.max(15, overallScore - 5),
+        skills: Math.max(15, overallScore - 10),
+        experience: Math.max(15, contentType === 'certificate' ? overallScore - 15 : overallScore - 8),
+        education: Math.max(15, contentType === 'certificate' ? overallScore + 20 : overallScore),
+        format: Math.max(20, overallScore + 5)
+      };
+    }
     
-    // Calculate realistic scores (40-95 range)
-    const scores = {
-      quality: this.calculateQualityScore(resumeText, sections, wordCount, skills, keywords),
-      skills: this.calculateSkillsScore(skills, text, keywords),
-      experience: this.calculateExperienceScore(experience, sections, resumeText),
-      education: this.calculateEducationScore(education, sections, text),
-      format: this.calculateFormattingScore(formatting, lines, resumeText)
-    };
+    const atsScore = isActualResume ? 
+      this.calculateATSScore(resumeText, skills, sections, keywords) : 
+      Math.max(20, overallScore + 5);
     
-    console.log('🎯 Individual scores calculated:', scores);
+    console.log('🏆 Final ultra-strict scores - Overall:', overallScore, 'ATS:', atsScore, 'Type:', contentType);
     
-    const overallScore = Math.round(Object.values(scores).reduce((a, b) => a + b) / 5);
-    const atsScore = this.calculateATSScore(resumeText, skills, sections, keywords);
-    
-    console.log('🏆 Final scores - Overall:', overallScore, 'ATS:', atsScore);
-    
-    const feedback = this.generateIntelligentFeedback(resumeText, scores, skills, sections, keywords);
+    const feedback = isActualResume ? 
+      this.generateIntelligentFeedback(resumeText, scores, skills, sections, keywords) :
+      this.generateNonResumeFeedback(contentType);
     
     return {
+      isActualResume,
+      contentType,
       overallScore,
       scores,
       atsScore,
@@ -216,9 +330,27 @@ class GeminiService {
         lineCount: lines.length,
         sectionsFound: Object.keys(sections).filter(k => sections[k]).length,
         skillsFound: skills.length,
-        keywordsFound: keywords.length
+        keywordsFound: keywords.length,
+        certificateWords: certificateMatches
       },
-      analysisMethod: 'Advanced Text Analysis'
+      analysisMethod: 'Ultra-Strict Advanced Text Analysis'
+    };
+  }
+
+  generateNonResumeFeedback(contentType) {
+    return {
+      strengths: ["Document is readable and well-formatted"],
+      improvements: [
+        `This appears to be a ${contentType}, not a professional resume`,
+        "Please upload an actual resume with work experience and skills",
+        "Include standard resume sections: contact info, experience, education, skills"
+      ],
+      recommendations: [
+        "Create a professional resume document with your career information",
+        "Include your work experience and key accomplishments",
+        "Add education background and relevant technical skills",
+        "Use a standard resume format with clear sections"
+      ]
     };
   }
 
@@ -228,40 +360,49 @@ class GeminiService {
     
     // Ensure scores are in valid ranges
     const sanitizedScores = {
-      quality: Math.max(25, Math.min(95, data.scores?.quality || 50)),
-      skills: Math.max(25, Math.min(95, data.scores?.skills || 45)),
-      experience: Math.max(30, Math.min(95, data.scores?.experience || 55)),
-      education: Math.max(35, Math.min(95, data.scores?.education || 60)),
-      format: Math.max(40, Math.min(95, data.scores?.format || 65))
+      quality: Math.max(15, Math.min(95, data.scores?.quality || (data.isActualResume ? 50 : 25))),
+      skills: Math.max(15, Math.min(95, data.scores?.skills || (data.isActualResume ? 45 : 20))),
+      experience: Math.max(15, Math.min(95, data.scores?.experience || (data.isActualResume ? 55 : 18))),
+      education: Math.max(15, Math.min(95, data.scores?.education || (data.isActualResume ? 60 : 30))),
+      format: Math.max(15, Math.min(95, data.scores?.format || (data.isActualResume ? 65 : 35)))
     };
     
-    const overallScore = Math.max(40, Math.min(95, data.overallScore || 
+    const overallScore = Math.max(15, Math.min(95, data.overallScore || 
       Math.round(Object.values(sanitizedScores).reduce((a, b) => a + b) / 5)));
     
-    const atsScore = Math.max(50, Math.min(100, data.atsScore || 75));
+    const atsScore = Math.max(20, Math.min(100, data.atsScore || (data.isActualResume ? 75 : 30)));
     
     return {
+      isActualResume: data.isActualResume === true,
+      contentType: data.contentType || 'other',
       overallScore,
       scores: sanitizedScores,
       atsScore,
       strengths: Array.isArray(data.strengths) ? data.strengths.slice(0, 5) : 
-        ["Resume shows professional structure", "Contains relevant work experience", "Skills section is present"],
+        (data.isActualResume ? 
+          ["Resume shows professional structure", "Contains relevant work experience", "Skills section is present"] :
+          ["Document is readable"]),
       improvements: Array.isArray(data.improvements) ? data.improvements.slice(0, 5) : 
-        ["Add more quantified achievements", "Include relevant keywords", "Improve formatting consistency"],
+        (data.isActualResume ? 
+          ["Add more quantified achievements", "Include relevant keywords", "Improve formatting consistency"] :
+          [`This is a ${data.contentType}, not a professional resume`, "Upload an actual resume with work experience"]),
       recommendations: Array.isArray(data.recommendations) ? data.recommendations.slice(0, 5) : 
-        ["Use action verbs to start bullet points", "Quantify achievements with numbers", "Tailor keywords to job descriptions"],
+        (data.isActualResume ? 
+          ["Use action verbs to start bullet points", "Quantify achievements with numbers", "Tailor keywords to job descriptions"] :
+          ["Create a professional resume", "Include work experience and skills"]),
       analyzedAt: new Date().toISOString(),
       textStats: {
         wordCount: words.length,
         lineCount: lines.length,
         sectionsFound: this.detectSections(resumeText),
-        skillsFound: this.extractSkills(resumeText.toLowerCase()).length
+        skillsFound: this.extractSkills(resumeText.toLowerCase()).length,
+        certificateDetected: data.certificateDetected || false
       },
-      analysisMethod: 'AI-Powered Analysis'
+      analysisMethod: data.analysisMethod || 'Ultra-Strict AI Analysis'
     };
   }
 
-  // Enhanced scoring methods
+  // Keep all your existing methods exactly the same below this line
   calculateQualityScore(resumeText, sections, wordCount, skills, keywords) {
     let score = 35; // Base score
     
@@ -459,7 +600,7 @@ class GeminiService {
       reasonableLength: resumeText.length > 500 && resumeText.length < 8000,
       hasNumbers: /\d/.test(resumeText),
       hasDates: /\d{4}/.test(resumeText),
-      hasBulletPoints: /[•\-\*]/.test(resumeText)
+      hasBulletPoints: /[•\-*]/.test(resumeText)
     };
   }
 
@@ -499,7 +640,7 @@ class GeminiService {
   }
 
   // ============================================================================
-  // INTERVIEW SIMULATION
+  // INTERVIEW SIMULATION (Keep all your existing methods)
   // ============================================================================
 
   async generateInterviewQuestions(jobRole, experienceLevel, skills) {
@@ -602,18 +743,15 @@ class GeminiService {
 
   async conductAIInterview(question, answer, context) {
     const prompt = `Evaluate this interview response and provide feedback:
-
     Question: ${question}
     Answer: ${answer}
     Context: ${context?.jobRole || 'General'} position
-
     Return JSON format:
     {
       "score": number (1-10),
       "feedback": "detailed feedback on the response",
       "tips": ["tip1", "tip2", "tip3"]
     }
-
     Evaluate based on relevance, completeness, examples used, and communication clarity.`;
 
     const result = await this.model.generateContent(prompt);
@@ -695,7 +833,7 @@ class GeminiService {
   }
 
   // ============================================================================
-  // JOB MATCHING
+  // JOB MATCHING (Keep all your existing methods)
   // ============================================================================
 
   async matchJobs(skills, experienceLevel, preferences) {
@@ -903,7 +1041,7 @@ class GeminiService {
       apiKey: !!this.apiKey,
       timestamp: new Date().toISOString(),
       version: '4.0',
-      mode: this.isInitialized ? 'AI-Powered' : 'Fallback'
+      mode: this.isInitialized ? 'AI-Powered Ultra-Strict' : 'Fallback Ultra-Strict'
     };
   }
 }

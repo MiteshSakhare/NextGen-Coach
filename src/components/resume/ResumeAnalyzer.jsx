@@ -26,62 +26,100 @@ import { geminiService } from '../../utils/geminiApi';
 import { storageService } from '../../utils/localStorage';
 import { useApp } from '../../hooks/useApp';
 
-// Enhanced AI Loading Animation - Responsive
+// Enhanced AI Loading Animation - Dynamic
 const AILoadingAnimation = () => (
-  <div className="flex flex-col items-center justify-center py-6 sm:py-8">
-    <div className="relative">
-      {/* Main Brain Icon - Responsive sizes */}
-      <motion.div
-        className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 rounded-xl sm:rounded-2xl shadow-xl sm:shadow-2xl flex items-center justify-center"
-        animate={{
-          scale: [1, 1.1, 1],
-          rotateY: [0, 180, 360]
-        }}
-        transition={{
-          duration: 3,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-      >
-        <Brain className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
-      </motion.div>
-      
-      {/* Orbiting Elements - Responsive positioning */}
-      {[0, 120, 240].map((rotation, index) => (
-        <motion.div
-          key={index}
-          className="absolute top-1/2 left-1/2 w-2 h-2 sm:w-3 sm:h-3 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full shadow-lg"
-          style={{
-            transformOrigin: '0 0'
-          }}
-          animate={{
-            rotate: [rotation, rotation + 360],
-            x: [0, 30, 0, -30, 0],
-            y: [0, -30, 0, 30, 0]
-          }}
-          transition={{
-            duration: 4,
-            repeat: Infinity,
-            ease: "linear",
-            delay: index * 0.5
-          }}
-        />
-      ))}
-    </div>
-    
+  <motion.div
+    className="flex flex-col items-center justify-center py-12 px-6"
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    transition={{ duration: 0.5 }}
+  >
+    {/* Animated AI Brain */}
     <motion.div
-      className="mt-4 sm:mt-6 text-center px-4"
-      animate={{ opacity: [0.5, 1, 0.5] }}
-      transition={{ duration: 2, repeat: Infinity }}
+      className="relative mb-8"
+      animate={{ rotate: 360 }}
+      transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
     >
-      <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-2">
-        🚀 NextGen AI is Analyzing Your Resume
-      </h3>
-      <p className="text-sm sm:text-base text-gray-600 max-w-xs sm:max-w-sm mx-auto">
-        Processing content, evaluating structure, and generating insights...
-      </p>
+      <div className="w-20 h-20 bg-gradient-to-br from-blue-500 via-purple-500 to-indigo-600 rounded-full flex items-center justify-center shadow-2xl">
+        <motion.div
+          animate={{ scale: [1, 1.2, 1] }}
+          transition={{ duration: 2, repeat: Infinity }}
+        >
+          <Brain className="h-10 w-10 text-white" />
+        </motion.div>
+      </div>
+      
+      {/* Orbiting Elements */}
+      <motion.div
+        className="absolute top-0 left-1/2 w-3 h-3 bg-blue-400 rounded-full"
+        animate={{ rotate: 360 }}
+        transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+        style={{ transformOrigin: "0 40px" }}
+      />
+      <motion.div
+        className="absolute top-0 left-1/2 w-2 h-2 bg-purple-400 rounded-full"
+        animate={{ rotate: -360 }}
+        transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+        style={{ transformOrigin: "0 50px" }}
+      />
     </motion.div>
-  </div>
+
+    {/* Dynamic Text Animation */}
+    <div className="text-center space-y-4">
+      <motion.h3 
+        className="text-2xl font-bold text-gray-800"
+        animate={{ opacity: [1, 0.7, 1] }}
+        transition={{ duration: 2, repeat: Infinity }}
+      >
+        🧠 Dynamic AI Analysis in Progress
+      </motion.h3>
+      
+      <motion.div className="space-y-2">
+        {[
+          "🔍 Analyzing document type and authenticity...",
+          "📊 Evaluating content quality and structure...", 
+          "🎯 Calculating personalized ATS compatibility...",
+          "💡 Generating unique improvement insights...",
+          "⚡ Preparing dynamic recommendations..."
+        ].map((text, index) => (
+          <motion.p
+            key={index}
+            className="text-sm text-gray-600 font-medium"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ 
+              delay: index * 1.5,
+              duration: 0.8,
+              repeat: Infinity,
+              repeatType: "loop",
+              repeatDelay: 6
+            }}
+          >
+            {text}
+          </motion.p>
+        ))}
+      </motion.div>
+
+      <motion.div 
+        className="mt-6 px-4 py-2 bg-blue-50 rounded-lg border border-blue-200"
+        animate={{ scale: [1, 1.02, 1] }}
+        transition={{ duration: 3, repeat: Infinity }}
+      >
+        <p className="text-xs text-blue-700 font-semibold">
+          🚀 Powered by Dynamic AI - Fresh Analysis Every Time
+        </p>
+      </motion.div>
+    </div>
+
+    {/* Progress Indicator */}
+    <motion.div className="mt-8 w-64 h-2 bg-gray-200 rounded-full overflow-hidden">
+      <motion.div
+        className="h-full bg-gradient-to-r from-blue-500 to-purple-500"
+        animate={{ x: ["-100%", "100%"] }}
+        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+      />
+    </motion.div>
+  </motion.div>
 );
 
 // Modern Upload Area Component - Fully Responsive
@@ -185,7 +223,7 @@ const ModernUploadArea = ({ dragActive, onDragHandlers, onFileClick, error, file
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
         >
-          Upload your PDF resume for comprehensive NextGen analysis with actionable insights 
+          Upload your PDF resume for comprehensive dynamic analysis with personalized insights 
           to boost your career prospects and land your dream job.
         </motion.p>
         
@@ -236,8 +274,8 @@ const ModernUploadArea = ({ dragActive, onDragHandlers, onFileClick, error, file
           {[
             { icon: Shield, label: 'PDF Only', color: 'green' },
             { icon: Target, label: 'Max 10MB', color: 'blue' },
-            { icon: Brain, label: 'AI Powered', color: 'purple' },
-            { icon: Zap, label: 'Instant Analysis', color: 'orange' }
+            { icon: Brain, label: 'Dynamic AI', color: 'purple' },
+            { icon: Zap, label: 'Fresh Analysis', color: 'orange' }
           ].map(({ icon: Icon, label, color }, index) => (
             <motion.div
               key={label}
@@ -334,7 +372,7 @@ const AnalyzerHeader = () => (
           NextGen Resume Analyzer
         </h1>
         <p className="text-sm sm:text-lg text-gray-500 font-semibold tracking-wide mt-1">
-          Powered by Advanced Machine Learning
+          Powered by Dynamic AI Intelligence
         </p>
       </div>
     </div>
@@ -347,7 +385,7 @@ const AnalyzerHeader = () => (
       transition={{ delay: 0.7 }}
     >
       {[
-        { icon: Stars, label: 'AI Analysis' },
+        { icon: Stars, label: 'Dynamic AI' },
         { icon: Target, label: 'ATS Check' },
         { icon: Lightbulb, label: 'Smart Tips' },
         { icon: Rocket, label: 'Career Boost' }
@@ -380,6 +418,7 @@ export function ResumeAnalyzer() {
   const [analysis, setAnalysis] = useState(null);
   const [error, setError] = useState(null);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [analysisId, setAnalysisId] = useState(null);
   const fileInputRef = useRef(null);
 
   const handleDrag = (e) => {
@@ -423,7 +462,12 @@ export function ResumeAnalyzer() {
       return;
     }
 
+    // Clear previous results immediately
     setError(null);
+    setAnalysis(null);
+    setResumeAnalysis(null);
+    setAnalysisId(null);
+    setShowConfetti(false);
     setLoading(true);
 
     try {
@@ -435,43 +479,71 @@ export function ResumeAnalyzer() {
         throw new Error('PDF appears to have insufficient text content. Please ensure your resume has readable text.');
       }
       
-      console.log('🤖 Starting AI analysis...');
+      console.log('🤖 Starting dynamic AI analysis...');
       const analysisResult = await geminiService.analyzeResume(resumeText);
-      console.log('✅ Analysis complete:', analysisResult);
+      console.log('✅ Dynamic analysis complete:', analysisResult);
       
       if (analysisResult.error) {
         throw new Error(analysisResult.error);
       }
 
+      // Enhanced processing with dynamic data
       const processedAnalysis = {
+        // Keep original scores from AI analysis
         overallScore: Math.round(analysisResult.overallScore || 45),
         scores: {
-          quality: Math.round(analysisResult.scores?.quality || 40),
+          content: Math.round(analysisResult.scores?.content || 40),
           skills: Math.round(analysisResult.scores?.skills || 35),
           experience: Math.round(analysisResult.scores?.experience || 50),
           education: Math.round(analysisResult.scores?.education || 60),
           format: Math.round(analysisResult.scores?.format || 55)
         },
         atsScore: Math.round(analysisResult.atsScore || 70),
+        
+        // Enhanced analysis data
+        isActualResume: analysisResult.isActualResume || true,
+        contentType: analysisResult.contentType || 'resume',
+        documentDescription: analysisResult.documentDescription || 'Resume analysis completed',
+        
+        // Dynamic feedback
         strengths: analysisResult.strengths || ["Resume contains professional information"],
         improvements: analysisResult.improvements || ["Add more quantified achievements"],
         recommendations: analysisResult.recommendations || ["Use action verbs", "Include metrics"],
+        
+        // Metadata
         filename: file.name,
         analyzedAt: new Date().toISOString(),
-        textStats: analysisResult.textStats || {
+        analysisId: analysisResult.analysisId || Math.random().toString(36).substring(2, 10),
+        sessionNonce: analysisResult.sessionNonce || Math.floor(Math.random() * 1000000),
+        analysisMethod: analysisResult.analysisMethod || 'Dynamic Analysis',
+        confidence: analysisResult.confidence || 'high',
+        
+        // Enhanced stats
+        textStats: {
           wordCount: resumeText.split(' ').length,
-          lineCount: resumeText.split('\n').length
-        }
+          lineCount: resumeText.split('\n').length,
+          sectionsFound: analysisResult.textStats?.sectionsFound || {},
+          skillsFound: analysisResult.textStats?.skillsFound || 0,
+          hasEmail: analysisResult.textStats?.hasEmail || false,
+          hasPhone: analysisResult.textStats?.hasPhone || false
+        },
+        
+        // Dynamic factors for debugging
+        dynamicFactors: analysisResult.dynamicFactors || {}
       };
 
       console.log('🎯 Final processed analysis:', processedAnalysis);
 
+      // Set all analysis data
       setAnalysis(processedAnalysis);
       setResumeAnalysis(processedAnalysis);
+      setAnalysisId(processedAnalysis.analysisId);
       
-      const analysisId = Date.now().toString();
-      storageService.saveResumeAnalysis(analysisId, processedAnalysis);
+      // Save to storage with unique ID
+      const storageId = `analysis-${processedAnalysis.analysisId}-${Date.now()}`;
+      storageService.saveResumeAnalysis(storageId, processedAnalysis);
       
+      // Show success effects
       setShowConfetti(true);
       setTimeout(() => setShowConfetti(false), 5000);
       
@@ -490,33 +562,47 @@ export function ResumeAnalyzer() {
     }
 
     try {
-      const reportContent = generateReportContent(analysis);
+      const reportContent = generateEnhancedReportContent(analysis);
       const blob = new Blob([reportContent], { type: 'text/plain;charset=utf-8' });
       const url = URL.createObjectURL(blob);
       
       const link = document.createElement('a');
       link.href = url;
-      link.download = `nextgen-resume-analysis-${new Date().toISOString().split('T')[0]}.txt`;
+      link.download = `nextgen-dynamic-analysis-${analysis.analysisId || 'report'}-${new Date().toISOString().split('T')[0]}.txt`;
       
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
       
-      console.log('✅ Report downloaded successfully');
+      console.log('✅ Enhanced report downloaded successfully');
     } catch (error) {
       console.error('❌ Download error:', error);
       alert('Error downloading report. Please try again.');
     }
   };
 
-  const generateReportContent = (analysisData) => {
+  const generateEnhancedReportContent = (analysisData) => {
     const date = new Date().toLocaleDateString();
     const time = new Date().toLocaleTimeString();
     
     return `
-🚀 NEXTGEN COACH - RESUME ANALYSIS REPORT
+🚀 NEXTGEN COACH - DYNAMIC RESUME ANALYSIS REPORT
 Generated: ${date} at ${time}
+Analysis ID: ${analysisData.analysisId || 'N/A'}
+Session: ${analysisData.sessionNonce || 'N/A'}
+
+=====================================
+DOCUMENT CLASSIFICATION
+=====================================
+Document Type: ${analysisData.contentType || 'Unknown'}
+Is Professional Resume: ${analysisData.isActualResume ? 'YES' : 'NO'}
+Analysis Method: ${analysisData.analysisMethod || 'Standard'}
+Confidence Level: ${analysisData.confidence || 'Medium'}
+
+${analysisData.documentDescription ? `
+Document Assessment: ${analysisData.documentDescription}
+` : ''}
 
 =====================================
 OVERALL PERFORMANCE
@@ -528,34 +614,52 @@ Resume File: ${analysisData.filename}
 =====================================
 DETAILED SCORES
 =====================================
-Content Quality: ${analysisData.scores.quality}%
-Skills Presentation: ${analysisData.scores.skills}%
-Experience Showcase: ${analysisData.scores.experience}%
-Education & Credentials: ${analysisData.scores.education}%
-Structure & Format: ${analysisData.scores.format}%
+Content Quality: ${analysisData.scores?.content || analysisData.scores?.quality || 'N/A'}%
+Skills Presentation: ${analysisData.scores?.skills || 'N/A'}%
+Experience Showcase: ${analysisData.scores?.experience || 'N/A'}%
+Education & Credentials: ${analysisData.scores?.education || 'N/A'}%
+Structure & Format: ${analysisData.scores?.format || 'N/A'}%
 
 =====================================
 DOCUMENT STATISTICS
 =====================================
-Word Count: ${analysisData.textStats.wordCount}
-Line Count: ${analysisData.textStats.lineCount}
-Sections Found: ${analysisData.textStats.sectionsFound}
-Skills Identified: ${analysisData.textStats.skillsFound}
+Word Count: ${analysisData.textStats?.wordCount || 'N/A'}
+Line Count: ${analysisData.textStats?.lineCount || 'N/A'}
+Sections Detected: ${analysisData.textStats?.sectionsFound ? Object.keys(analysisData.textStats.sectionsFound).filter(k => analysisData.textStats.sectionsFound[k]).length : 'N/A'}
+Skills Identified: ${analysisData.textStats?.skillsFound || 'N/A'}
+Email Present: ${analysisData.textStats?.hasEmail ? 'Yes' : 'No'}
+Phone Present: ${analysisData.textStats?.hasPhone ? 'Yes' : 'No'}
 
 =====================================
 🌟 KEY STRENGTHS
 =====================================
-${analysisData.strengths.map((strength, index) => `${index + 1}. ${strength}`).join('\n')}
+${analysisData.strengths?.map((strength, index) => `${index + 1}. ${strength}`).join('\n') || 'No specific strengths identified'}
 
 =====================================
 🎯 AREAS FOR IMPROVEMENT
 =====================================
-${analysisData.improvements.map((improvement, index) => `${index + 1}. ${improvement}`).join('\n')}
+${analysisData.improvements?.map((improvement, index) => `${index + 1}. ${improvement}`).join('\n') || 'No specific improvements identified'}
 
 =====================================
 💡 NEXTGEN RECOMMENDATIONS
 =====================================
-${analysisData.recommendations.map((rec, index) => `${index + 1}. ${rec}`).join('\n')}
+${analysisData.recommendations?.map((rec, index) => `${index + 1}. ${rec}`).join('\n') || 'No specific recommendations available'}
+
+=====================================
+🔍 ANALYSIS DETAILS
+=====================================
+Analysis Timestamp: ${analysisData.analyzedAt || 'N/A'}
+Processing Method: ${analysisData.analysisMethod || 'Standard Analysis'}
+Confidence Level: ${analysisData.confidence || 'Medium'}
+
+${analysisData.dynamicFactors ? `
+Dynamic Factors:
+- Content Length: ${analysisData.dynamicFactors.contentLength || 'N/A'} characters
+- Analysis Variation: ${analysisData.dynamicFactors.analysisVariation || 'N/A'}
+- Quality Multiplier: ${analysisData.dynamicFactors.qualityMultiplier || 'N/A'}
+- Resume Signals: ${analysisData.dynamicFactors.resumeSignals || 'N/A'}
+- Certificate Signals: ${analysisData.dynamicFactors.certificateSignals || 'N/A'}
+` : ''}
 
 =====================================
 ✅ ACTION ITEMS
@@ -563,29 +667,52 @@ ${analysisData.recommendations.map((rec, index) => `${index + 1}. ${rec}`).join(
 ☐ Implement top 3 improvement suggestions
 ☐ Add quantified achievements with metrics
 ☐ Optimize keywords for ATS systems
-☐ Review and update formatting
-☐ Proofread for consistency and clarity
+☐ Review and update formatting consistency
+☐ Proofread for grammar and clarity
+☐ Test resume with multiple ATS scanners
+☐ Get feedback from industry professionals
 
 =====================================
 🚀 NEXT STEPS FOR SUCCESS
 =====================================
 1. Focus on the highest-impact improvements first
-2. Use action verbs and quantified results
+2. Use strong action verbs and quantified results
 3. Tailor your resume for each job application
-4. Test with ATS-friendly resume scanners
-5. Get feedback from industry professionals
+4. Ensure ATS-friendly formatting and keywords
+5. Seek professional review and feedback
 
-Generated by NextGen Coach v3.0 | Powered by Advanced AI
+=====================================
+📊 QUALITY INDICATORS
+=====================================
+${analysisData.isActualResume ? 
+`✅ Professional resume document detected
+✅ Career-focused content structure
+✅ Industry-standard formatting detected` : 
+`⚠️  Non-resume document detected
+⚠️  Consider uploading a professional resume
+⚠️  Current document may not be suitable for job applications`}
+
+Generated by NextGen Coach Dynamic AI v7.0
+Analysis ID: ${analysisData.analysisId || 'N/A'} | Powered by Advanced Machine Learning
     `.trim();
   };
 
   const resetAnalyzer = () => {
+    console.log('🔄 Resetting analyzer - clearing all data');
+    
+    // Clear all state
     setAnalysis(null);
+    setResumeAnalysis(null);
     setError(null);
     setShowConfetti(false);
+    setAnalysisId(null);
+    
+    // Clear file input
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
+    
+    console.log('✅ Analyzer reset complete');
   };
 
   if (isLoading) {
@@ -625,7 +752,7 @@ Generated by NextGen Coach v3.0 | Powered by Advanced AI
             transition={{ duration: 0.6 }}
             className="space-y-6 sm:space-y-8"
           >
-            {/* Results Header - Responsive */}
+            {/* Enhanced Results Header - Responsive */}
             <motion.div
               className="bg-white rounded-2xl sm:rounded-3xl shadow-xl sm:shadow-2xl border border-gray-100 p-6 sm:p-8 mx-4 sm:mx-0"
               initial={{ opacity: 0, scale: 0.95 }}
@@ -643,14 +770,24 @@ Generated by NextGen Coach v3.0 | Powered by Advanced AI
                   </motion.div>
                   <div className="text-center sm:text-left w-full sm:w-auto">
                     <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-                      🎉 Analysis Complete!
+                      🎉 Dynamic Analysis Complete!
                     </h2>
                     <p className="text-sm sm:text-base text-gray-600">
                       <span className="font-semibold block sm:inline">{analysis.filename}</span>
                       <span className="text-xs sm:text-sm block sm:inline sm:ml-2">
                         {analysis.textStats?.wordCount || 0} words analyzed
                       </span>
+                      {analysis.analysisId && (
+                        <span className="text-xs text-gray-500 block sm:inline sm:ml-2">
+                          ID: {analysis.analysisId}
+                        </span>
+                      )}
                     </p>
+                    {analysis.documentDescription && (
+                      <p className="text-xs text-gray-500 mt-1">
+                        {analysis.documentDescription}
+                      </p>
+                    )}
                   </div>
                 </div>
                 
